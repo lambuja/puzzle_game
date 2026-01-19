@@ -12,13 +12,13 @@ const CONFIG = {
              id: 'dino-1',
              name: 'T-Rex',
              url: './images/trex.jpeg',
-             isLocal: true
+             isLocal: false
         },
         {
              id: 'dino-2',
              name: 'Anquilossauro',
              url: './images/anquilo.jpeg',
-             isLocal: true
+             isLocal: false
         },
         // EXEMPLO DE IMAGEM LOCAL:
         // {
