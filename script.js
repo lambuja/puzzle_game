@@ -802,28 +802,29 @@ function shufflePieces() {
 
 function startDrag(e, piece) {
     if (piece.locked) return;
-    
+
     e.preventDefault();
     draggedPiece = piece;
-    
+
     const groupPieces = getGroupPieces(piece.groupId);
     const maxZ = Math.max(...pieces.map(p => parseInt(p.element.style.zIndex) || 0));
     groupPieces.forEach(p => {
         p.element.style.zIndex = maxZ + 1;
         p.element.classList.add('dragging');
     });
-    
+
     const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
     const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
-    
+
     // Calcular offset em relação à posição lógica da peça (centro, sem saliências)
     offsetX = clientX - piece.currentX;
     offsetY = clientY - piece.currentY;
-    
+
     document.addEventListener('mousemove', drag);
     document.addEventListener('touchmove', drag, { passive: false });
     document.addEventListener('mouseup', stopDrag);
     document.addEventListener('touchend', stopDrag);
+    document.addEventListener('touchcancel', stopDrag);
 }
 
 function drag(e) {
@@ -849,17 +850,18 @@ function drag(e) {
 
 function stopDrag() {
     if (!draggedPiece) return;
-    
+
     const groupPieces = getGroupPieces(draggedPiece.groupId);
     groupPieces.forEach(p => p.element.classList.remove('dragging'));
-    
+
     checkSnapping(draggedPiece);
     draggedPiece = null;
-    
+
     document.removeEventListener('mousemove', drag);
     document.removeEventListener('touchmove', drag);
     document.removeEventListener('mouseup', stopDrag);
     document.removeEventListener('touchend', stopDrag);
+    document.removeEventListener('touchcancel', stopDrag);
 }
 
 // ============================================
