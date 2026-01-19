@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jogo de quebra-cabeça com peças realistas e encaixes">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Puzzle Game">
+    
+    <title>Puzzle Game</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Ícones para iOS -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Tela de Seleção de Imagem -->
+    <div id="imageSelectionScreen" class="screen active">
+        <div class="selection-header">
+            <h1>🧩 Jigsaw Puzzle</h1>
+            <p class="subtitle">Escolha uma imagem para começar</p>
+        </div>
+
+        <div class="selection-content">
+            <!-- Botão de Upload -->
+            <div class="upload-section">
+                <label for="imageUpload" class="upload-card">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">
+                        <strong>Adicionar Nova Imagem</strong>
+                        <span>Clique para fazer upload</span>
+                    </div>
+                </label>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;" multiple>
+            </div>
+
+            <!-- Galeria de Imagens -->
+            <div class="gallery-section">
+                <h2>Galeria de Imagens</h2>
+                <div id="imageGallery" class="image-gallery">
+                    <!-- Imagens serão inseridas aqui via JavaScript -->
+                </div>
+                <p class="gallery-empty" id="galleryEmpty">Nenhuma imagem adicionada ainda. Faça upload para começar!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela do Jogo -->
+    <div id="gameScreen" class="screen">
+        <!-- Controles do jogo -->
+        <div class="controls">
+            <div class="controls-header">
+                <button id="backBtn" class="icon-btn" title="Voltar para seleção">← Trocar Imagem</button>
+                <h2>Jigsaw Puzzle</h2>
+            </div>
+            
+            <div class="controls-row">
+                <div class="control-group">
+                    <label for="difficulty">Dificuldade:</label>
+                    <select id="difficulty">
+                        <option value="3">Fácil (3×3)</option>
+                        <option value="4" selected>Médio (4×4)</option>
+                        <option value="5">Difícil (5×5)</option>
+                        <option value="6">Expert (6×6)</option>
+                    </select>
+                </div>
+                <button id="restartBtn" class="secondary-btn">🔄 Reiniciar</button>
+            </div>
+            
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="progress">0%</span> completo
+            </div>
+        </div>
+
+        <!-- Área do quebra-cabeça -->
+        <div class="puzzle-container">
+            <canvas id="puzzleCanvas"></canvas>
+            <div id="piecesContainer"></div>
+        </div>
+    </div>
+
+    <!-- Modal de vitória -->
+    <div id="victoryModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Parabéns!</h2>
+            <p>Você completou o puzzle!</p>
+            <div class="modal-buttons">
+                <button id="playAgainBtn">Jogar Novamente</button>
+                <button id="changeImageBtn" class="secondary-btn">Trocar Imagem</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content small">
+            <h3>Excluir Imagem?</h3>
+            <p>Esta ação não pode ser desfeita.</p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn" class="danger-btn">Excluir</button>
+                <button id="cancelDeleteBtn" class="secondary-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- Registro do Service Worker para PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('✓ Service Worker registrado:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('✗ Falha ao registrar Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
