@@ -140,15 +140,29 @@ function setupEventListeners() {
     document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
     document.getElementById('cancelDeleteBtn').addEventListener('click', () => closeModal('deleteModal'));
     
-    // Redimensionamento
+    // Redimensionamento - preservar estado do jogo
     let resizeTimeout;
+    let lastContainerWidth = 0;
+    let lastContainerHeight = 0;
+
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
             if (pieces.length > 0 && gameScreen.classList.contains('active')) {
-                restartGame();
+                const containerRect = piecesContainer.getBoundingClientRect();
+
+                // Só reagir se houve mudança significativa no container (rotação de tela)
+                const widthChanged = Math.abs(containerRect.width - lastContainerWidth) > 50;
+                const heightChanged = Math.abs(containerRect.height - lastContainerHeight) > 50;
+
+                if (widthChanged || heightChanged) {
+                    // Preservar progresso e apenas reposicionar peças
+                    resizeGamePreservingState();
+                    lastContainerWidth = containerRect.width;
+                    lastContainerHeight = containerRect.height;
+                }
             }
-        }, 500);
+        }, 300);
     });
 }
 
@@ -1014,6 +1028,74 @@ function showModal(modalId) {
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
+}
+
+// ============================================
+// REDIMENSIONAR JOGO (PRESERVANDO ESTADO)
+// ============================================
+
+function resizeGamePreservingState() {
+    if (!pieces.length || !image.width) return;
+
+    const containerRect = piecesContainer.getBoundingClientRect();
+    const oldPieceWidth = pieceWidth;
+    const oldPieceHeight = pieceHeight;
+
+    // Recalcular dimensões do canvas
+    const aspectRatio = image.width / image.height;
+
+    let newCanvasWidth = Math.min(containerRect.width * 0.6, image.width);
+    let newCanvasHeight = newCanvasWidth / aspectRatio;
+
+    if (newCanvasHeight > containerRect.height * 0.6) {
+        newCanvasHeight = containerRect.height * 0.6;
+        newCanvasWidth = newCanvasHeight * aspectRatio;
+    }
+
+    canvas.width = newCanvasWidth;
+    canvas.height = newCanvasHeight;
+
+    const newPieceWidth = newCanvasWidth / gridSize;
+    const newPieceHeight = newCanvasHeight / gridSize;
+
+    // Calcular fator de escala
+    const scaleX = newPieceWidth / oldPieceWidth;
+    const scaleY = newPieceHeight / oldPieceHeight;
+
+    // Atualizar dimensões globais
+    pieceWidth = newPieceWidth;
+    pieceHeight = newPieceHeight;
+
+    // Redesenhar canvas
+    ctx.drawImage(image, 0, 0, newCanvasWidth, newCanvasHeight);
+
+    // Atualizar posições das peças proporcionalmente
+    pieces.forEach(piece => {
+        // Escalar posição atual
+        piece.currentX *= scaleX;
+        piece.currentY *= scaleY;
+
+        // Atualizar posição correta
+        piece.correctX = piece.col * pieceWidth;
+        piece.correctY = piece.row * pieceHeight;
+
+        // Recriar elemento visual da peça
+        const oldElement = piece.element;
+        piece.element = createPieceElement(piece);
+
+        // Copiar estado visual
+        piece.element.style.zIndex = oldElement.style.zIndex;
+        if (piece.locked) {
+            piece.element.classList.add('locked');
+            piece.element.style.cursor = 'default';
+        }
+
+        // Substituir no DOM
+        piecesContainer.replaceChild(piece.element, oldElement);
+
+        // Atualizar posição visual
+        updatePiecePosition(piece);
+    });
 }
 
 // ============================================
