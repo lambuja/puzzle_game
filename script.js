@@ -20,6 +20,42 @@ const CONFIG = {
              url: './images/anquilo.jpeg',
              isLocal: false
         },
+        {
+             id: 'dino-3',
+             name: 'Pterodactilo',
+             url: './images/ptero.jpeg',
+             isLocal: false
+        },
+        {
+             id: 'dino-4',
+             name: 'Triceratopo',
+             url: './images/tricera.jpeg',
+             isLocal: false
+        },
+        {
+             id: 'dino-5',
+             name: 'Raptor1',
+             url: './images/raptor1.jpeg',
+             isLocal: false
+        },
+        {
+             id: 'dino-6',
+             name: 'Raptor2',
+             url: './images/raptor2.jpeg',
+             isLocal: false
+        },
+        {
+             id: 'dino-7',
+             name: 'Braquiossauro',
+             url: './images/braquio.jpeg',
+             isLocal: false
+        },
+        {
+             id: 'dino-8',
+             name: 'Estegossauro',
+             url: './images/stego.jpeg',
+             isLocal: false
+        },
         // EXEMPLO DE IMAGEM LOCAL:
         // {
         //     id: 'local-1',
